@@ -42,7 +42,8 @@ from qutebrowser.utils import usertypes, log, qtutils, message, objreg, utils
 Target = enum.Enum('Target', ['normal', 'current', 'tab', 'tab_fg', 'tab_bg',
                               'window', 'yank', 'yank_primary', 'run', 'fill',
                               'hover', 'download', 'userscript', 'spawn',
-                              'delete'])
+                              'delete',
+                              'click_first'])
 
 
 class HintingError(Exception):
@@ -204,6 +205,7 @@ class HintActions:
             Target.tab_bg: usertypes.ClickTarget.tab_bg,
             Target.window: usertypes.ClickTarget.window,
             Target.hover: usertypes.ClickTarget.normal,
+            Target.click_first: usertypes.ClickTarget.normal,
         }
         if config.val.tabs.background:
             target_mapping[Target.tab] = usertypes.ClickTarget.tab_bg
@@ -377,6 +379,7 @@ class HintManager(QObject):
         Target.userscript: "Call userscript via hint",
         Target.spawn: "Spawn command via hint",
         Target.delete: "Delete an element",
+        Target.click_first: "Click on the first hint immediately",
     }
 
     def __init__(self, win_id, tab_id, parent=None):
@@ -607,6 +610,9 @@ class HintManager(QObject):
             log.hints.debug(
                 "Current tab changed ({} -> {}) before _start_cb is run."
                 .format(self._tab_id, tab.tab_id))
+
+        if self._context.target == Target.click_first:
+            self._actions.click(elems[0], self._context)
             return
 
         strings = self._hint_strings(elems)
