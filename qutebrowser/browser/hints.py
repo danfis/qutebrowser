@@ -39,7 +39,7 @@ from qutebrowser.utils import usertypes, log, qtutils, message, objreg, utils
 Target = usertypes.enum('Target', ['normal', 'current', 'tab', 'tab_fg',
                                    'tab_bg', 'window', 'yank', 'yank_primary',
                                    'run', 'fill', 'hover', 'download',
-                                   'userscript', 'spawn'])
+                                   'userscript', 'spawn', 'click_first'])
 
 
 class HintingError(Exception):
@@ -202,6 +202,7 @@ class HintActions:
             Target.tab_bg: usertypes.ClickTarget.tab_bg,
             Target.window: usertypes.ClickTarget.window,
             Target.hover: usertypes.ClickTarget.normal,
+            Target.click_first: usertypes.ClickTarget.normal,
         }
         if config.get('tabs', 'background-tabs'):
             target_mapping[Target.tab] = usertypes.ClickTarget.tab_bg
@@ -363,6 +364,7 @@ class HintManager(QObject):
         Target.download: "Download hint",
         Target.userscript: "Call userscript via hint",
         Target.spawn: "Spawn command via hint",
+        Target.click_first: "Click on the first hint immediately",
     }
 
     def __init__(self, win_id, tab_id, parent=None):
@@ -584,6 +586,9 @@ class HintManager(QObject):
         elems = [e for e in elems if filterfunc(e)]
         if not elems:
             message.error("No elements found.")
+            return
+        if self._context.target == Target.click_first:
+            self._actions.click(elems[0], self._context)
             return
         strings = self._hint_strings(elems)
         log.hints.debug("hints: {}".format(', '.join(strings)))
