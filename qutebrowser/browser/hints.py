@@ -45,7 +45,7 @@ if typing.TYPE_CHECKING:
 Target = enum.Enum('Target', ['normal', 'current', 'tab', 'tab_fg', 'tab_bg',
                               'window', 'yank', 'yank_primary', 'run', 'fill',
                               'hover', 'download', 'userscript', 'spawn',
-                              'delete', 'right_click'])
+                              'delete', 'right_click', 'click_first'])
 
 
 class HintingError(Exception):
@@ -204,6 +204,7 @@ class HintActions:
             Target.tab_fg: usertypes.ClickTarget.tab,
             Target.tab_bg: usertypes.ClickTarget.tab_bg,
             Target.window: usertypes.ClickTarget.window,
+            Target.click_first: usertypes.ClickTarget.normal,
         }
         if config.val.tabs.background:
             target_mapping[Target.tab] = usertypes.ClickTarget.tab_bg
@@ -371,6 +372,7 @@ class HintManager(QObject):
         Target.userscript: "Call userscript via hint",
         Target.spawn: "Spawn command via hint",
         Target.delete: "Delete an element",
+        Target.click_first: "Click on the first hint immediately",
     }
 
     def __init__(self, win_id: int, parent: QObject = None) -> None:
@@ -617,6 +619,10 @@ class HintManager(QObject):
             log.hints.debug(
                 "Current tab changed ({} -> {}) before _start_cb is run."
                 .format(self._context.tab.tab_id, tab.tab_id))
+            return
+
+        if self._context.target == Target.click_first:
+            self._actions.click(elems[0], self._context)
             return
 
         strings = self._hint_strings(elems)
