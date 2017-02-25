@@ -321,6 +321,9 @@ class WebKitElement(webelem.AbstractWebElement):
         self._tab.data.override_target = click_target
         super()._click_fake_event(click_target)
 
+    def _blur(self):
+        self._elem.evaluateJavaScript('this.blur();')
+
 
 def get_child_frames(startframe):
     """Get all children recursively of a given QWebFrame.

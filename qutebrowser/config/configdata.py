@@ -558,6 +558,11 @@ def data(readonly=False):
              "Whether to automatically enter insert mode if an editable "
              "element is focused after page load."),
 
+            ('auto-blur',
+             SettingValue(typ.Bool(), 'false'),
+             "Whether to automatically remove focus from all elements after "
+             "page load."),
+
             ('forward-unbound-keys',
              SettingValue(typ.String(
                  valid_values=typ.ValidValues(

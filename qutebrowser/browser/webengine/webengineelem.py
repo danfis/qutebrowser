@@ -191,3 +191,7 @@ class WebEngineElement(webelem.AbstractWebElement):
 
         js_code = javascript.assemble('webelem', 'click', self._id)
         self._tab.run_js_async(js_code, reset_setting)
+
+    def _blur(self):
+        js_code = javascript.assemble('webelem', 'blur', self._id)
+        self._tab.run_js_async(js_code)

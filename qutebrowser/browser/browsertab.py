@@ -682,6 +682,18 @@ class AbstractTab(QWidget):
 
         self.elements.find_focused(_auto_insert_mode_cb)
 
+    def _handle_auto_blur(self, ok):
+        """Handle auto-blur after loading finished."""
+        if not config.get('input', 'auto-blur') or not ok:
+            return
+
+        def _auto_blur_cb(elem):
+            """Called from JS after finding the focused element."""
+            if elem is not None:
+                elem.blur()
+
+        self.elements.find_focused(_auto_blur_cb)
+
     @pyqtSlot(bool)
     def _on_load_finished(self, ok):
         sess_manager = objreg.get('session-manager')
@@ -699,6 +711,7 @@ class AbstractTab(QWidget):
         self.load_finished.emit(ok)
         if not self.title():
             self.title_changed.emit(self.url().toDisplayString())
+        self._handle_auto_blur(ok)
         self._handle_auto_insert_mode(ok)
 
     @pyqtSlot()

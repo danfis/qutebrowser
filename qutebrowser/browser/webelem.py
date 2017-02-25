@@ -435,3 +435,6 @@ class AbstractWebElement(collections.abc.MutableMapping):
         event = QMouseEvent(QEvent.MouseMove, pos, Qt.NoButton, Qt.NoButton,
                             Qt.NoModifier)
         self._tab.send_event(event)
+
+    def blur(self):
+        self._blur()

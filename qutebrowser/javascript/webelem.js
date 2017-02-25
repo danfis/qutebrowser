@@ -203,5 +203,10 @@ window._qutebrowser.webelem = (function() {
         elem.focus();
     };
 
+    funcs.blur = function(id) {
+        var elem = elements[id];
+        elem.blur();
+    };
+
     return funcs;
 })();
