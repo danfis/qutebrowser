@@ -98,6 +98,8 @@ class UrlCompletionModel(base.BaseCompletionModel):
 
     def _add_history_entry(self, entry):
         """Add a new history entry to the completion."""
+        if entry.url.scheme() == 'data':
+            return
         self.new_item(self._history_cat, entry.url.toDisplayString(),
                       entry.title,
                       self._fmt_atime(entry.atime), sort=int(entry.atime),
